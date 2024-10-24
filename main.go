@@ -23,7 +23,7 @@ func (r *RealClock) Now() time.Time {
 
 func main() {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, os.Getenv("DB_DSN"))
+	conn, err := pgx.Connect(ctx, os.Getenv("DB_CONN"))
 
 	if err != nil {
 		log.Fatal(err)
