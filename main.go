@@ -50,6 +50,7 @@ func main() {
 
 	authenticatedGroup := root.Group("")
 	authenticatedGroup.Use(AuthMiddleware(authService))
+	authenticatedGroup.RouteFunc("GET /logout", authHandlers.Logout)
 	authenticatedGroup.RouteFunc("GET /whoami", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -160,5 +161,23 @@ func (handler *AuthHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
+	sessionCookie := &http.Cookie{
+		Name:     "sessionID",
+		Value:    "",
+		Quoted:   false,
+		Expires:  time.Time{},
+		MaxAge:   0,
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	// TODO: Revoke session
+
+	http.SetCookie(w, sessionCookie)
 	w.WriteHeader(http.StatusOK)
 }
