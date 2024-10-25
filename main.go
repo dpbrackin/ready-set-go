@@ -51,11 +51,7 @@ func main() {
 	authenticatedGroup := root.Group("")
 	authenticatedGroup.Use(AuthMiddleware(authService))
 	authenticatedGroup.RouteFunc("GET /logout", authHandlers.Logout)
-	authenticatedGroup.RouteFunc("GET /whoami", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(r.Context().Value("user"))
-	})
+	authenticatedGroup.RouteFunc("GET /whoami", authHandlers.WhoAmI)
 
 	addr := ":3000"
 
@@ -180,4 +176,10 @@ func (handler *AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, sessionCookie)
 	w.WriteHeader(http.StatusOK)
+}
+
+func (handler *AuthHandlers) WhoAmI(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(r.Context().Value("user"))
 }
